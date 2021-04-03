@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 
-const initialMarkState = {
-  fixed: false,
-  latlng: { lat: 6, lng: 7 },
-};
+import "./MapLeaflet.css";
 
-const MapLeaflet = ({ defaultProps, setLatLng }) => {
-  const { address, latlng, zoom, scrollZoom } = defaultProps;
+const MapLeaflet = ({ defaultProps, setLatLng, markPoints }) => {
+  const { address, latlng } = defaultProps;
 
-  // if (latlng.lat === -999 && latlng.lng === -999) return <div></div>;
+  const MarkerList = ({ markPoints }) => {
+    return markPoints === []
+      ? null
+      : markPoints.map((mrk) => (
+          <Marker position={mrk.latlng} key={mrk.key}>
+            <Popup>{mrk.address}</Popup>
+          </Marker>
+        ));
+  };
 
-  console.log(latlng);
   const LocationMarker = () => {
     const map = useMapEvents({
       click: (e) => {
@@ -20,8 +24,9 @@ const MapLeaflet = ({ defaultProps, setLatLng }) => {
     });
 
     useEffect(() => {
+      // console.log(latlng);
       map.flyTo(latlng, map.getZoom());
-    }, [latlng]);
+    }, [map]);
 
     return latlng === null ? null : (
       <Marker position={latlng}>
@@ -41,6 +46,7 @@ const MapLeaflet = ({ defaultProps, setLatLng }) => {
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <MarkerList markPoints={markPoints} />
       <LocationMarker />
     </MapContainer>
   );

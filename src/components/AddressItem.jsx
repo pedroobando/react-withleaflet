@@ -1,12 +1,10 @@
 import React from "react";
 
-export const AddressItem = ({ mapPoint }) => {
-  // console.log(mapPoint);
-
+export const AddressItem = ({ mapPoint, onClickItem }) => {
   return (
     <div
       className="item"
-      onClick={() => console.log(mapPoint.latlng)}
+      onClick={() => onClickItem(mapPoint)}
       style={{ cursor: "default" }}
     >
       <i className="linkify icon"></i>

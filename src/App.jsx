@@ -20,10 +20,32 @@ const provider = new OpenStreetMapProvider();
 
 const App = () => {
   const [mapLocation, setMapLocation] = useState(initialState);
-  const [locationList, setLocationList] = useState(initialStateList);
+  const [addressList, setAddressList] = useState(initialStateList);
+  const [locationList, setLocationList] = useState([]);
 
   const handleChangeAddress = ({ target }) => {
     setMapLocation((valueMap) => ({ ...valueMap, [target.name]: target.value }));
+  };
+
+  const handleMapLocation = ({ address, latlng }) => {
+    setMapLocation({ address, latlng });
+  };
+
+  const handleSelectPoint = () => {
+    setLocationList((lst) => [
+      ...lst,
+      {
+        key: locationList.length + 1,
+        address: mapLocation.address,
+        latlng: mapLocation.latlng,
+      },
+    ]);
+  };
+
+  const handleClearPoint = () => {
+    setLocationList([]);
+    setMapLocation(initialState);
+    setAddressList(initialStateList);
   };
 
   const handleSearchAddress = async () => {
@@ -31,43 +53,55 @@ const App = () => {
     if (streeSearch.length >= 3) {
       const srcLocation = await provider.search({ query: mapLocation.address.trim() });
       if (srcLocation.length >= 1) {
-        setLocationList(
+        setAddressList(
           srcLocation.map((point, ind) => ({
             key: ind,
             address: point.label,
             latlng: { lat: point.y, lng: point.x },
           }))
         );
-        setMapLocation((valueMap) => ({
-          ...valueMap,
-          latlng: { lat: srcLocation[0].y, lng: srcLocation[0].x },
-        }));
       }
     }
   };
+
   return (
     <div className="ui container">
-      <h1>Leaflet</h1>
+      <h2 className="ui header  center aligned icon">
+        <i className="circular icon map"></i>
+        Leaflet
+      </h2>
       <div>
-        <div className="ui icon input" style={{ width: "75%" }}>
+        <div className="ui icon input" style={{ width: "60%" }}>
           <input
             name="address"
-            value={setMapLocation.address}
+            value={mapLocation.address}
             type="text"
             placeholder="Buscar direccion"
             onChange={handleChangeAddress}
           />
           <i className="circular search link icon" onClick={handleSearchAddress}></i>
         </div>
-        <button className="ui basic button" style={{ marginLeft: "5px" }}>
-          <i className="map outline icon"></i>
-          Agregar
+        <button
+          className="ui basic green button"
+          style={{ marginLeft: "5px" }}
+          onClick={handleSelectPoint}
+        >
+          <i className="map marker alternate icon"></i>
+          Marcar
+        </button>
+        <button className="ui red button" onClick={handleClearPoint}>
+          <i className="trash icon"></i>
+          Borrar
         </button>
       </div>
-      <AddressList locationList={locationList} />
+      <AddressList locationList={addressList} onClickItem={handleMapLocation} />
 
       <div className="ui segment">
-        <MapLeaflet defaultProps={mapLocation} setLatLng={setMapLocation} />
+        <MapLeaflet
+          defaultProps={mapLocation}
+          setLatLng={setMapLocation}
+          markPoints={locationList}
+        />
       </div>
     </div>
   );
