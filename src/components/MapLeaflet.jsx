@@ -24,7 +24,7 @@ const MapLeaflet = ({ defaultProps, setLatLng, markPoints }) => {
     });
 
     useEffect(() => {
-      // console.log(latlng);
+      console.log(latlng);
       map.flyTo(latlng, map.getZoom());
     }, [map]);
 

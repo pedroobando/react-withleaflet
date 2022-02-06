@@ -1,110 +1,33 @@
-import { useState } from "react";
-import { OpenStreetMapProvider } from "leaflet-geosearch";
-
-import AddressList from "./components/AddressList";
-
-import "./App.css";
-import "semantic-ui-css/semantic.min.css";
-import MapLeaflet from "./components/MapLeaflet";
-
-const initialState = {
-  address: "",
-  latlng: {
-    lat: 0,
-    lng: 0,
-  },
-};
-
-const initialStateList = [];
-const provider = new OpenStreetMapProvider();
-
-const App = () => {
-  const [mapLocation, setMapLocation] = useState(initialState);
-  const [addressList, setAddressList] = useState(initialStateList);
-  const [locationList, setLocationList] = useState([]);
-
-  const handleChangeAddress = ({ target }) => {
-    setMapLocation((valueMap) => ({ ...valueMap, [target.name]: target.value }));
-  };
-
-  const handleMapLocation = ({ address, latlng }) => {
-    setMapLocation({ address, latlng });
-  };
-
-  const handleSelectPoint = () => {
-    setLocationList((lst) => [
-      ...lst,
-      {
-        key: locationList.length + 1,
-        address: mapLocation.address,
-        latlng: mapLocation.latlng,
-      },
-    ]);
-  };
-
-  const handleClearPoint = () => {
-    setLocationList([]);
-    setMapLocation(initialState);
-    setAddressList(initialStateList);
-  };
-
-  const handleSearchAddress = async () => {
-    const streeSearch = mapLocation.address.trim();
-    if (streeSearch.length >= 3) {
-      const srcLocation = await provider.search({ query: mapLocation.address.trim() });
-      if (srcLocation.length >= 1) {
-        setAddressList(
-          srcLocation.map((point, ind) => ({
-            key: ind,
-            address: point.label,
-            latlng: { lat: point.y, lng: point.x },
-          }))
-        );
-      }
-    }
-  };
-
+import React from "react";
+import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import { Map1 } from "./Map1";
+import { MapServidentJm } from "./MapServidentJm";
+export const App = () => {
   return (
-    <div className="ui container">
-      <h2 className="ui header  center aligned icon">
-        <i className="circular icon map"></i>
-        Leaflet
-      </h2>
-      <div>
-        <div className="ui icon input" style={{ width: "60%" }}>
-          <input
-            name="address"
-            value={mapLocation.address}
-            type="text"
-            placeholder="Buscar direccion"
-            onChange={handleChangeAddress}
-          />
-          <i className="circular search link icon" onClick={handleSearchAddress}></i>
-        </div>
-        <button
-          className="ui basic green button"
-          style={{ marginLeft: "5px" }}
-          onClick={handleSelectPoint}
-        >
-          <i className="map marker alternate icon"></i>
-          Marcar
-        </button>
-        <button className="ui red button" onClick={handleClearPoint}>
-          <i className="trash icon"></i>
-          Borrar
-        </button>
-      </div>
-      <AddressList locationList={addressList} onClickItem={handleMapLocation} />
+    <BrowserRouter>
+      <h1>App de mapas</h1>
+      <nav className="ui menu" style={{ width: "90%", margin: "0.5rem 2rem" }}>
+        <NavLink to="/" className={`${(isActive) => (isActive ? "active" : "")} item`}>
+          Princial
+        </NavLink>
+        <NavLink to="/servidentmj" className={`${(isActive) => (isActive ? "active" : "")} item`}>
+          Servident MJ
+        </NavLink>
+      </nav>
 
-      <div className="ui segment">
-        <MapLeaflet
-          defaultProps={mapLocation}
-          setLatLng={setMapLocation}
-          markPoints={locationList}
+      <Routes>
+        <Route path="/" element={<Map1 />} />
+        <Route path="servidentmj" element={<MapServidentJm />} />
+        <Route
+          path="*"
+          element={
+            <h2>
+              Epale hermano la direccion que elegite no esta.{" "}
+              <NavLink to="/">Volver volver vooolver...</NavLink>
+            </h2>
+          }
         />
-      </div>
-    </div>
+      </Routes>
+    </BrowserRouter>
   );
 };
-
-export default App;
