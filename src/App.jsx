@@ -5,15 +5,17 @@ import { MapServidentJm } from "./MapServidentJm";
 export const App = () => {
   return (
     <BrowserRouter>
-      <h1>App de mapas</h1>
-      <nav className="ui menu" style={{ width: "90%", margin: "0.5rem 2rem" }}>
-        <NavLink to="/" className={`${(isActive) => (isActive ? "active" : "")} item`}>
-          Princial
-        </NavLink>
-        <NavLink to="/servidentmj" className={`${(isActive) => (isActive ? "active" : "")} item`}>
-          Servident MJ
-        </NavLink>
-      </nav>
+      <div className="ui container">
+        <h1>App de mapas</h1>
+        <nav className="ui menu">
+          <NavLink to="/" className={`${(isActive) => (isActive ? "active" : "")} item`}>
+            Princial
+          </NavLink>
+          <NavLink to="/servidentmj" className={`${(isActive) => (isActive ? "active" : "")} item`}>
+            Servident MJ
+          </NavLink>
+        </nav>
+      </div>
 
       <Routes>
         <Route path="/" element={<Map1 />} />
